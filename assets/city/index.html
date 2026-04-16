@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ShopVerse 3D City</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #0d0d1a; color: #fff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    #canvas-container { position: fixed; inset: 0; z-index: 0; }
+    
+    #loader {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      transition: opacity 0.6s ease;
+    }
+    .loader-inner { text-align: center; }
+    .loader-spinner {
+      width: 60px; height: 60px; margin: 0 auto 20px;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: #6c63ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-title { font-size: 2rem; font-weight: 700; color: #fff; letter-spacing: 2px; }
+    .loader-subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-top: 8px; }
+
+    #top-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+      height: 58px;
+      display: flex; align-items: center; gap: 16px; padding: 0 20px;
+      background: rgba(10,10,20,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    #logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .logo-icon { font-size: 1.4rem; }
+    .logo-text { font-size: 1.1rem; font-weight: 700; color: #fff; white-space: nowrap; }
+    .logo-text em { color: #6c63ff; font-style: normal; }
+
+    #filters { display: flex; gap: 6px; overflow-x: auto; flex: 1; }
+    #filters::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75);
+      font-size: 0.78rem; cursor: pointer; white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { background: rgba(108,99,255,0.3); border-color: #6c63ff; color: #fff; }
+    .filter-btn.active { background: #6c63ff; border-color: #6c63ff; color: #fff; font-weight: 600; }
+
+    #controls-hint {
+      display: flex; gap: 12px; flex-shrink: 0;
+      font-size: 0.7rem; color: rgba(255,255,255,0.35);
+    }
+    #controls-hint span { white-space: nowrap; }
+
+    #shop-panel {
+      position: fixed; top: 70px; right: 16px; z-index: 10;
+      width: 300px; border-radius: 16px;
+      background: rgba(15,15,30,0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+    #shop-panel.hidden { transform: translateX(340px); opacity: 0; pointer-events: none; }
+    #shop-panel-close {
+      position: absolute; top: 10px; right: 12px;
+      background: none; border: none; color: rgba(255,255,255,0.4);
+      font-size: 1rem; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+      transition: color 0.2s;
+    }
+    #shop-panel-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+    #shop-panel-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    #shop-icon-badge {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; flex-shrink: 0;
+    }
+    #shop-panel-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 3px; }
+    #shop-panel-type { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+
+    #shop-panel-body { padding: 16px 20px 20px; }
+    .shop-meta-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
+    #shop-panel-rating { color: #ffc107; font-size: 0.85rem; }
+    #shop-panel-price { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+    #shop-panel-desc { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.55; margin-bottom: 14px; }
+    #shop-panel-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .shop-tag {
+      padding: 3px 10px; border-radius: 10px; font-size: 0.72rem;
+      background: rgba(108,99,255,0.2); color: #a89cff;
+    }
+    #shop-panel-hours { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+    .meta-label { font-weight: 600; }
+    #shop-visit-btn {
+      width: 100%; padding: 12px; border-radius: 10px; border: none;
+      background: linear-gradient(135deg, #6c63ff, #a855f7);
+      color: #fff; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    #shop-visit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    #hover-tooltip {
+      position: fixed; z-index: 20; pointer-events: none;
+      padding: 6px 12px; border-radius: 8px;
+      background: rgba(10,10,20,0.9); border: 1px solid rgba(255,255,255,0.15);
+      font-size: 0.8rem; color: #fff; white-space: nowrap;
+      backdrop-filter: blur(8px);
+      transition: opacity 0.15s;
+    }
+    #hover-tooltip.hidden { opacity: 0; }
+
+    #shop-count-badge {
+      position: fixed; bottom: 20px; right: 20px; z-index: 10;
+      padding: 8px 16px; border-radius: 20px;
+      background: rgba(10,10,20,0.85); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.8rem; color: rgba(255,255,255,0.6);
+    }
+    #visible-count { font-weight: 700; color: #6c63ff; font-size: 1rem; }
+
+    #mini-legend {
+      position: fixed; bottom: 20px; left: 20px; z-index: 10;
+      width: 180px; padding: 14px; border-radius: 14px;
+      background: rgba(10,10,20,0.85); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .legend-title { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 10px; letter-spacing: 1px; }
+    #legend-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; }
+    .legend-dot {
+      width: 30px; height: 30px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+      border: 2px solid transparent;
+    }
+    .legend-dot:hover { transform: scale(1.15); }
+    .legend-dot.dimmed { opacity: 0.3; }
+    .legend-dot.highlighted { border-color: #fff; transform: scale(1.15); }
+  </style>
+</head>
+<body>
+
+  <div id="canvas-container"></div>
+
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-spinner"></div>
+      <div class="loader-title">ShopVerse City</div>
+      <div class="loader-subtitle">Building your 3D shopping world…</div>
+    </div>
+  </div>
+
+  <header id="top-bar">
+    <div id="logo">
+      <span class="logo-icon">🏙️</span>
+      <span class="logo-text">ShopVerse <em>City</em></span>
+    </div>
+    <nav id="filters">
+      <button class="filter-btn active" data-filter="all">All Shops</button>
+      <button class="filter-btn" data-filter="Electronics">⚡ Electronics</button>
+      <button class="filter-btn" data-filter="Fashion">👗 Fashion</button>
+      <button class="filter-btn" data-filter="Food">🍽️ Food</button>
+      <button class="filter-btn" data-filter="Lifestyle">🌿 Lifestyle</button>
+      <button class="filter-btn" data-filter="Entertainment">🎭 Entertainment</button>
+    </nav>
+    <div id="controls-hint">
+      <span>🖱️ Drag to orbit</span>
+      <span>🖱️ Scroll to zoom</span>
+      <span>Click a shop to explore</span>
+    </div>
+  </header>
+
+  <aside id="shop-panel" class="hidden">
+    <button id="shop-panel-close">✕</button>
+    <div id="shop-panel-header">
+      <div id="shop-icon-badge"></div>
+      <div id="shop-panel-title-group">
+        <h2 id="shop-panel-name"></h2>
+        <span id="shop-panel-type"></span>
+      </div>
+    </div>
+    <div id="shop-panel-body">
+      <div class="shop-meta-row">
+        <span id="shop-panel-rating"></span>
+        <span id="shop-panel-price"></span>
+      </div>
+      <p id="shop-panel-desc"></p>
+      <div id="shop-panel-tags"></div>
+      <div id="shop-panel-hours">
+        <span class="meta-label">🕐 Hours</span>
+        <span id="shop-hours-value">9:00 AM – 9:00 PM</span>
+      </div>
+      <button id="shop-visit-btn">🛒 Visit Shop</button>
+    </div>
+  </aside>
+
+  <div id="hover-tooltip" class="hidden"></div>
+
+  <div id="shop-count-badge">
+    <span id="visible-count">16</span> shops
+  </div>
+
+  <div id="mini-legend">
+    <div class="legend-title">🗺️ City Map</div>
+    <div id="legend-grid"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js"></script>
+  
+  <script>
+    window.onerror = function(msg, url, line, col, error) {
+      console.error('ShopCity Error:', msg, 'at line', line);
+      if (typeof window.ReactNativeWebView !== 'undefined') {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'error',
+          error: msg + ' (line ' + line + ')'
+        }));
+      }
+      return false;
+    };
+  </script>
+  
+  <script src="shop-city.js"></script>
+
+</body>
+</html>
