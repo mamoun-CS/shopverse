@@ -55,6 +55,42 @@ const mockStores: Store[] = [
     rating: 4.7,
     products: [],
   },
+  {
+    id: 'store5',
+    name: 'TechZone',
+    address: '555 Tech Avenue, Innovation Park',
+    latitude: 37.7549,
+    longitude: -122.4394,
+    rating: 4.5,
+    products: [],
+  },
+  {
+    id: 'store6',
+    name: 'Style & Co',
+    address: '666 Fashion Blvd, Style District',
+    latitude: 37.7449,
+    longitude: -122.4494,
+    rating: 4.2,
+    products: [],
+  },
+  {
+    id: 'store7',
+    name: 'Bean & Brew',
+    address: '777 Coffee Lane, Cafe Town',
+    latitude: 37.7349,
+    longitude: -122.4594,
+    rating: 4.8,
+    products: [],
+  },
+  {
+    id: 'store8',
+    name: 'FreshMart',
+    address: '888 Green Street, Market District',
+    latitude: 37.7249,
+    longitude: -122.4694,
+    rating: 4.3,
+    products: [],
+  },
 ];
 
 function calculateDistance(

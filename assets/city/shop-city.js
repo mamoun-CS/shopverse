@@ -23,7 +23,11 @@
     { id:12, name:'AutoShop',    type:'Automotive',   cat:'Lifestyle',     color:0x263238, accent:0x78909C, h:50, icon:'🚗', rating:4.0, price:'$$',   desc:'Auto parts, accessories and expert customization services.' },
     { id:13, name:'MusicBox',    type:'Music',        cat:'Entertainment', color:0x4527A0, accent:0xB39DDB, h:43, icon:'🎵', rating:4.7, price:'$$',   desc:'Instruments, high-fidelity audio and music lessons.' },
     { id:14, name:'PetCorner',   type:'Pet Store',    cat:'Lifestyle',     color:0x558B2F, accent:0xAED581, h:37, icon:'🐾', rating:4.8, price:'$',    desc:'Everything your furry, feathered or scaled friend needs.' },
-    { id:15, name:'ArtHouse',    type:'Art Gallery',  cat:'Entertainment', color:0x6A1B9A, accent:0xCE93D8, h:60, icon:'🎨', rating:4.5, price:'$$$',  desc:'Curated local and contemporary fine art — prints & originals.' }
+    { id:15, name:'ArtHouse',    type:'Art Gallery',  cat:'Entertainment', color:0x6A1B9A, accent:0xCE93D8, h:60, icon:'🎨', rating:4.5, price:'$$$',  desc:'Curated local and contemporary fine art — prints & originals.' },
+    { id:16, name:'TestShop1',  type:'Test',          cat:'Lifestyle',     color:0xFF5722, accent:0xFFAB91, h:40, icon:'🛒', rating:4.0, price:'$',    desc:'Test shop 1 for city 3d.' },
+    { id:17, name:'TestShop2',  type:'Test',          cat:'Lifestyle',     color:0x00BCD4, accent:0x80DEEA, h:45, icon:'🛒', rating:4.1, price:'$$',  desc:'Test shop 2 for city 3d.' },
+    { id:18, name:'TestShop3',  type:'Test',          cat:'Entertainment', color:0x9C27B0, accent:0xCE93D8, h:35, icon:'🛒', rating:4.2, price:'$',    desc:'Test shop 3 for city 3d.' },
+    { id:19, name:'TestShop4',  type:'Test',          cat:'Fashion',       color:0xE91E63, accent:0xF48FB1, h:38, icon:'🛒', rating:4.3, price:'$$',  desc:'Test shop 4 for city 3d.' }
   ];
 
   /* ── 2. CITY LAYOUT CONSTANTS ─────────────────────────────── */

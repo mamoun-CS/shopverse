@@ -114,7 +114,7 @@ export const generateCityHTML = () => `<!DOCTYPE html>
     /* Top Bar */
     #top-bar {
       position: fixed;
-      top: 20px;
+      top: 50px;
       left: 20px;
       right: 20px;
       height: 60px;
@@ -537,8 +537,17 @@ export const generateCityHTML = () => `<!DOCTYPE html>
     <button class="zoom-btn" id="zoom-out">−</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js" crossorigin="anonymous"></script>
-  <script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    window.THREE = THREE;
+
     ${generateThreeJSLogic()}
   </script>
 </body>
